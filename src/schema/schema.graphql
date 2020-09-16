@@ -1,0 +1,55 @@
+"Consultas de la información de las ciudades y equipos de futbol. Solo lectura"
+type Query{
+  "Lista de ciudades"
+  citiesList: [Cities]!
+  "Lista de ciudades por ID"
+  cityList(id: ID!): Cities!
+  "Lista de equipos de futbol"
+  teamsList: [Teams]!
+  "Lista de equipos de futbol por ID"
+  teamList(id: ID!): Teams!
+}
+
+"Operaciones para añadir, editar o eliminar información"
+type Mutation {
+  "Agregar ciudad"
+  addCity(cities: citiesInput!): Cities!
+  "Modificar ciudad"
+  updateCity(cities: citiesInput!): Cities!
+  "Eliminar ciudad"
+  deleteCity(id: ID!): Cities!
+  "Agregar Equipo de futbol"
+  addTeam(teams: teamsInput!): Teams!
+  "Modificar Equipo de futbol"
+  updateTeam(teams: teamsInput!): Teams!
+  "Eliminar Equipo de futbol"
+  deleteTeam(id: ID!): Cities!
+}
+
+input citiesInput  {
+  id: ID
+  city: String!
+  country: String!
+  continent: String!
+}
+
+type Cities {
+  id: ID!
+  city: String!
+  country: String!
+  continent: String!
+}
+
+input teamsInput {
+  id: ID
+  equipment: String!
+  ligue: String!
+  country: String!
+}
+
+type Teams {
+  id: ID!
+  equipment: String!
+  ligue: String!
+  country: String!
+}
