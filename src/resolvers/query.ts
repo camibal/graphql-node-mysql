@@ -6,7 +6,7 @@ import { Teams } from '../entity/Teams';
 const query: IResolvers = {
     Query: {
         async citiesList() {
-            console.log('aca llego query')  
+            // console.log('ok cities list')
             const citiesRepository = getRepository(Cities);
             let cities: Array<any> = [];
             try {

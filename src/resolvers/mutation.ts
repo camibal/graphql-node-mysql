@@ -5,11 +5,15 @@ import { getRepository } from 'typeorm';
 import { validate } from 'class-validator';
 import { Teams } from '../entity/Teams';
 import { validateSchema } from 'graphql';
+import { checkJwt } from './../middlewares/jwt';
+import { checkRole } from './../middlewares/role';
+const { AuthorizationError, noInputError } = require('./../errors/error');
 
 const mutation: IResolvers = {
     Mutation: {
         // CITIES
         async addCity(__: void, { cities }) {
+            console.log('ok add city')
             const city = new Cities();
             city.id = cities.id;
             city.city = cities.city;
@@ -54,6 +58,7 @@ const mutation: IResolvers = {
             return city;
         },
         async deleteCity(__: void, { id }) {
+            console.log('ok delete city')
             const citiesRepository = getRepository(Cities);
             let city: Cities;
 
