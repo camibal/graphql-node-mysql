@@ -3,29 +3,37 @@ import express from 'express';
 import cors from 'cors';
 
 // App Imports
-import setupGraphQL from './setup/graphql';
 import { createServer } from 'http';
-import {createConnection} from "typeorm";
+import { createConnection } from "typeorm";
 const config = require('./config/config');
+import schema from './schema';
+import { ApolloServer } from 'apollo-server-express';
+import expressPlayground from 'graphql-playground-middleware-express';
+import { checkJwt } from './middlewares/jwt';
 
 // Create express server
-const server = express();
+const app = express();
 
 //cors
-server.use('*', cors());
-
-// Setup GraphQL
-setupGraphQL(server);
+app.use('*', cors());
 
 //create Connection
 createConnection();
 
-// Start web server
-const httpServer = createServer(server);
-httpServer.listen(config.port, (error: any) => {
-    if (error) {
-        console.error('ERROR - Unable to start server.')
-    } else {
-        console.info(`INFO - Server started on port http://localhost:${config.port}/graphql`)
-    }
+// Start server
+const server = new ApolloServer({
+    schema: schema,
+    introspection: true, // Necesario
 });
+
+server.applyMiddleware({ app });
+
+app.use('/', expressPlayground({
+    endpoint: '/graphql'
+}
+));
+const PORT = process.env.PORT || 3000;
+
+const httpServer = createServer(app);
+
+httpServer.listen({ port: PORT }, (): void => console.log(`http://localhost:${PORT}/graphql`));

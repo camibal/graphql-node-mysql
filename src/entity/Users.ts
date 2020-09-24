@@ -9,13 +9,13 @@ export class Users {
   id: number;
 
   @Column()
-  @MinLength(6)
+  @MinLength(2)
   @IsEmail()
   @IsNotEmpty()
   username: string;
 
   @Column()
-  @MinLength(6)
+  @MinLength(2)
   @IsNotEmpty()
   password: string;
 

@@ -8,6 +8,7 @@ type Query{
   teamsList: [Teams]!
   "Lista de equipos de futbol por ID"
   teamList(id: ID!): Teams!
+ 
 }
 
 "Operaciones para añadir, editar o eliminar información"
@@ -23,7 +24,39 @@ type Mutation {
   "Modificar Equipo de futbol"
   updateTeam(teams: teamsInput!): Teams!
   "Eliminar Equipo de futbol"
-  deleteTeam(id: ID!): Cities!
+  deleteTeam(id: ID!): Teams!
+  "Agregar Usuarios"
+  addUsers(user: userInput!): User!
+   "Iniciar Sesiòn"
+  signIn(login: loginInput!): Token!
+}
+
+input loginInput {
+  username: String!
+  password: String!
+}
+
+type Token {
+  token: String
+}
+
+ type LoginUser {
+    username: String!
+    password: String!
+  }
+
+input userInput {
+  id: ID
+  username: String!
+  password: String!
+  role: String!
+}
+
+type User {
+  id: ID!
+  username: String!
+  password: String!
+  role: String!
 }
 
 input citiesInput  {

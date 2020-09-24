@@ -1,9 +1,0 @@
-{
-    "graphqlEndpoint": "/",
-    "port": 3000,
-    "graphql": {
-      "ide": true,
-      "pretty": true
-    }
-  }
-  

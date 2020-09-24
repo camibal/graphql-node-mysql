@@ -2,6 +2,11 @@ import { IResolvers } from "graphql-tools";
 import { getRepository } from 'typeorm';
 import { Cities } from '../entity/Cities';
 import { Teams } from '../entity/Teams';
+import { Users } from "../entity/Users";
+const bcrypt = require('bcryptjs');
+// import { Config } from '../config/config';
+import * as jwt from 'jsonwebtoken';
+import { Token } from "../entity/Token";
 
 const query: IResolvers = {
     Query: {

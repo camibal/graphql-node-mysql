@@ -4,16 +4,57 @@ import { Cities } from '../entity/Cities';
 import { getRepository } from 'typeorm';
 import { validate } from 'class-validator';
 import { Teams } from '../entity/Teams';
-import { validateSchema } from 'graphql';
+import * as  Token from '../entity/Token';
+import { Users } from '../entity/Users';
+import * as config from '../config/config';
+import jwt from 'jsonwebtoken';
 import { checkJwt } from './../middlewares/jwt';
-import { checkRole } from './../middlewares/role';
-const { AuthorizationError, noInputError } = require('./../errors/error');
+import { AuthenticationError } from 'apollo-server-express';
+
 
 const mutation: IResolvers = {
     Mutation: {
-        // CITIES
+        // SIGN IN
+        async signIn(__: void, { login }) {
+            const userRepository = getRepository(Users);
+            let user: Users;
+
+            try {
+                const username = login.username;
+                user = await userRepository.findOneOrFail({ where: { username } });
+            } catch (e) {
+                return console.log('Username or password incorecct!')
+            }
+
+            // Check password
+            if (!user.checkPassword(login.password)) {
+                return console.log('Username or Password are incorrect!')
+            }
+            const token = jwt.sign({ userId: user.id, username: user.username }, config.default.jwtSecret, { expiresIn: '1h' });
+            const result: any = {
+                token
+            };
+            return result;
+
+        },
+        // SIGN UP
+        async addUsers(__: void, { user }) {
+            const users = new Users();
+            users.username = user.username;
+            users.password = user.password;
+            users.role = user.role;
+
+            const userRepository = getRepository(Users);
+            try {
+                users.hashPassword();
+                await userRepository.save(users);
+            } catch (e) {
+                return noCompletado(5);
+            }
+            return users;
+        },
+        // CRUD CITIES
         async addCity(__: void, { cities }) {
-            console.log('ok add city')
             const city = new Cities();
             city.id = cities.id;
             city.city = cities.city;
@@ -22,7 +63,7 @@ const mutation: IResolvers = {
 
             // Validate
             const validationOpt = { validationError: { target: false, value: false } };
-            const errors = await validate(cities, validationOpt);
+            const errors = await validate(city, validationOpt);
             if (errors.length > 0) {
                 return noCompletado(1);
             }
@@ -37,12 +78,13 @@ const mutation: IResolvers = {
             return city;
         },
         async updateCity(__: void, { cities }) {
+            console.log(JSON.stringify(cities.id))
             let city;
 
             const citiesRepository = getRepository(Cities);
             // Try get cities
             try {
-                city = await citiesRepository.findOneOrFail(city);
+                city = await citiesRepository.findOneOrFail(cities.id);
                 city.city = cities.city;
                 city.country = cities.country;
                 city.continent = cities.continent;
@@ -58,7 +100,7 @@ const mutation: IResolvers = {
             return city;
         },
         async deleteCity(__: void, { id }) {
-            console.log('ok delete city')
+            // console.log('ok delete city')
             const citiesRepository = getRepository(Cities);
             let city: Cities;
 
@@ -71,8 +113,9 @@ const mutation: IResolvers = {
             citiesRepository.delete(id);
             return city;
         },
-        // TEAMS
+        // CRUD TEAMS
         async addTeam(__: void, { teams }) {
+            // console.log(JSON.stringify(teams))
             const team = new Teams();
             team.id = teams.id;
             team.equipment = teams.equipment;
@@ -81,7 +124,7 @@ const mutation: IResolvers = {
 
             // Validate
             const validationOpt = { validationError: { target: false, value: false } };
-            const errors = await validate(teams, validationOpt);
+            const errors = await validate(team, validationOpt);
             if (errors.length > 0) {
                 return noCompletado(4);
             }
@@ -95,6 +138,7 @@ const mutation: IResolvers = {
             return team;
         },
         async updateTeam(__: void, { teams }) {
+            // console.log(JSON.stringify(teams))
             let team;
 
             const teamsRepository = getRepository(Teams);
