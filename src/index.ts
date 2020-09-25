@@ -9,7 +9,7 @@ const config = require('./config/config');
 import schema from './schema';
 import { ApolloServer } from 'apollo-server-express';
 import expressPlayground from 'graphql-playground-middleware-express';
-import { checkJwt } from './middlewares/jwt';
+import Auth from './schema/Auth';
 
 // Create express server
 const app = express();
@@ -24,6 +24,7 @@ createConnection();
 const server = new ApolloServer({
     schema: schema,
     introspection: true, // Necesario
+    context: Auth,
 });
 
 server.applyMiddleware({ app });

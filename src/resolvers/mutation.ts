@@ -4,11 +4,9 @@ import { Cities } from '../entity/Cities';
 import { getRepository } from 'typeorm';
 import { validate } from 'class-validator';
 import { Teams } from '../entity/Teams';
-import * as  Token from '../entity/Token';
 import { Users } from '../entity/Users';
 import * as config from '../config/config';
 import jwt from 'jsonwebtoken';
-import { checkJwt } from './../middlewares/jwt';
 import { AuthenticationError } from 'apollo-server-express';
 
 
@@ -54,7 +52,12 @@ const mutation: IResolvers = {
             return users;
         },
         // CRUD CITIES
-        async addCity(__: void, { cities }) {
+        async addCity(__: void, { cities }, context: any) {
+
+            if (context.isAuth === false) {
+                throw new AuthenticationError('Not authorized');
+            }
+
             const city = new Cities();
             city.id = cities.id;
             city.city = cities.city;
@@ -77,10 +80,11 @@ const mutation: IResolvers = {
             // All ok
             return city;
         },
-        async updateCity(__: void, { cities }) {
-            console.log(JSON.stringify(cities.id))
+        async updateCity(__: void, { cities }, context: any) {
+            if (context.isAuth === false) {
+                throw new AuthenticationError('Not authorized');
+            }
             let city;
-
             const citiesRepository = getRepository(Cities);
             // Try get cities
             try {
@@ -99,8 +103,10 @@ const mutation: IResolvers = {
             }
             return city;
         },
-        async deleteCity(__: void, { id }) {
-            // console.log('ok delete city')
+        async deleteCity(__: void, { id }, context: any) {
+            if (context.isAuth === false) {
+                throw new AuthenticationError('Not authorized');
+            }
             const citiesRepository = getRepository(Cities);
             let city: Cities;
 
@@ -114,8 +120,10 @@ const mutation: IResolvers = {
             return city;
         },
         // CRUD TEAMS
-        async addTeam(__: void, { teams }) {
-            // console.log(JSON.stringify(teams))
+        async addTeam(__: void, { teams }, context: any) {
+            if (context.isAuth === false) {
+                throw new AuthenticationError('Not authorized');
+            }
             const team = new Teams();
             team.id = teams.id;
             team.equipment = teams.equipment;
@@ -137,8 +145,10 @@ const mutation: IResolvers = {
             // All ok
             return team;
         },
-        async updateTeam(__: void, { teams }) {
-            // console.log(JSON.stringify(teams))
+        async updateTeam(__: void, { teams }, context: any) {
+            if (context.isAuth === false) {
+                throw new AuthenticationError('Not authorized');
+            }
             let team;
 
             const teamsRepository = getRepository(Teams);
@@ -160,7 +170,10 @@ const mutation: IResolvers = {
             console.log(team)
             return team;
         },
-        async deleteTeam(__: void, { id }) {
+        async deleteTeam(__: void, { id }, context: any) {
+            if (context.isAuth === false) {
+                throw new AuthenticationError('Not authorized');
+            }
             const teamsRepository = getRepository(Teams);
             let team: Teams;
 
